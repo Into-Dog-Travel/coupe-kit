@@ -55,8 +55,12 @@ h1 em{font-style:normal;color:var(--red)}
 .chip{border:2px solid var(--on-yellow);border-radius:99px;padding:4px 12px;font-weight:600;font-size:14px;background:rgba(255,255,255,.35)}
 
 /* Workspace */
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;padding-block:32px 56px;align-items:start}
-@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;padding-block:32px 56px;max-width:780px}
+.step{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:22px 20px;display:grid;gap:16px;min-width:0}
+.step.go{border:2px solid var(--ink)}
+.step h3{margin:0;font:800 18px/1.2 var(--display)}
+.sendbox{border-top:1px dashed var(--line);padding-top:16px;display:grid;gap:10px}
+.finally{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15.5px}
 form{display:grid;gap:22px;min-width:0}
 fieldset{border:1px solid var(--line);background:var(--surface);border-radius:10px;margin:0;padding:22px 20px 22px;display:grid;gap:16px;min-width:0}
 legend{display:contents}
@@ -151,7 +155,7 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid
 .emailcard h3{margin:0;font:800 18px/1.2 var(--display)}
 .copyrow{display:flex;gap:8px;flex-wrap:wrap}
 .small-btn{border:1.5px solid var(--ink);background:var(--field);color:var(--ink);border-radius:7px;padding:8px 12px;font:700 14px var(--body);cursor:pointer;text-decoration:none;display:inline-block}
-.emailcard pre{white-space:pre-wrap;font:400 13.5px/1.5 var(--body);margin:0;max-height:240px;overflow:auto;background:var(--bg);border-radius:6px;padding:10px;border:1px solid var(--line)}
+.sendbox pre{white-space:pre-wrap;font:400 13.5px/1.5 var(--body);margin:0;max-height:240px;overflow:auto;background:var(--bg);border-radius:6px;padding:10px;border:1px solid var(--line)}
 .addr{font:600 14px var(--mono);overflow-wrap:anywhere}
 
 .tips{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
@@ -265,42 +269,19 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
       </details>
     </fieldset>
 
-    <fieldset>
-      <legend><div class="stephead"><span class="num">5</span><div><h2>Print, sign and attach</h2><p>The page doesn't ask for your documents. Keep photocopies of these ready.</p></div></div></legend>
-      <ul class="attach">
-        <li><button type="button" class="ex" data-ex="ticket"><b>E-ticket</b> showing your PNR</button></li>
-        <li><button type="button" class="ex" data-ex="vacc"><b>Vaccination record</b> of your dog</button></li>
-        <li><button type="button" class="ex" data-ex="fit"><b>Fitness certificate</b> from a vet</button></li>
-        <li><button type="button" class="ex" data-ex="id"><b>Photo ID</b> of one passenger, such as Aadhaar</button></li>
-      </ul>
-      <p class="hint" style="margin:0">Tap any item to see Boggi's real one, with personal details hidden.</p>
-      <p class="hint" style="margin:0">Email the letter with these attached as photos or PDFs. Sign the printed Emergency Quota form by hand and staple the copies to it.</p>
-    </fieldset>
+
   </form>
 
-  <aside>
-    <div class="stub" aria-live="polite">
-      <div class="stub-top"><span>Coupe request</span><span id="sClass">1A · 2-berth</span></div>
-      <div class="stub-body">
-        <div class="route"><span id="sFrom">FROM</span><span class="arrow" aria-hidden="true">→</span><span id="sTo">TO</span></div>
-        <div class="meta">
-          <div><small>PNR</small><b id="sPnr">——————————</b></div>
-          <div><small>Train</small><b id="sTrain">—————</b></div>
-          <div><small>Journey</small><b id="sDate">—</b></div>
-          <div><small>Dog</small><b id="sDog">—</b></div>
-        </div>
-        <div class="perf"></div>
-        <div class="deadline" id="deadline"><strong>Pick your journey date</strong>We'll show when the Emergency Quota form has to reach the DRM office.</div>
-        <div class="dl">
-          <button type="button" class="btn" id="genLetter"><span>Download coupe request letter<small>PDF · email this to the DRM (Google for the email ID)</small></span><span aria-hidden="true">↓</span></button>
-          <button type="button" class="btn" id="genEq"><span>Download Emergency Quota form<small>PDF · print, sign, drop at the office (Google for address and timings)</small></span><span aria-hidden="true">↓</span></button>
-        </div>
-        <div class="status" id="status" role="status"></div>
-      </div>
+  <section class="step go" id="step5">
+    <div class="stephead"><span class="num">5</span><div><h2>Download and send</h2><p>Check steps 1 to 4, then download both documents.</p></div></div>
+    <div class="deadline" id="deadline"><strong>Pick your journey date</strong>We'll show when the Emergency Quota form has to reach the DRM office.</div>
+    <div class="dl">
+      <button type="button" class="btn" id="genLetter"><span>Download coupe request letter<small>PDF · email this to the DRM (Google for the email ID)</small></span><span aria-hidden="true">↓</span></button>
+      <button type="button" class="btn" id="genEq"><span>Download Emergency Quota form<small>PDF · print, sign, drop at the office (Google for address and timings)</small></span><span aria-hidden="true">↓</span></button>
     </div>
-
-    <div class="emailcard" id="emailCard">
-      <h3>The email to send</h3>
+    <div class="status" id="status" role="status"></div>
+    <div class="sendbox" id="emailCard">
+      <h3>Email the letter to the DRM</h3>
       <div><span class="hint">To</span><div class="addr" id="eTo">Add the DRM office email in step 4</div></div>
       <div><span class="hint">Subject</span><div id="eSubj" style="font-weight:600;font-size:14px"></div></div>
       <pre id="eBody"></pre>
@@ -309,21 +290,32 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
         <button type="button" class="small-btn" id="copyBody">Copy email</button>
         <a class="small-btn" id="mailto" href="#">Open in email app</a>
       </div>
-      <span class="hint">Attach the letter PDF yourself before you send.</span>
+      <span class="hint">Send it as soon as your ticket is booked. Attach the letter PDF and the copies from step 6.</span>
     </div>
+  </section>
 
-    <div class="tips">
-      <h3>Before you submit</h3>
-      <ol>
-        <li>Email the letter to the DRM as soon as your ticket is booked.</li>
-        <li>Drop the signed Emergency Quota form, with copies of your documents, at the DRM office at least one day before the journey.</li>
-        <li>Carry the vaccination record and the vet's fitness certificate on the train.</li>
-        <li>Coupe allotment is done via <button type="button" class="ex" data-ex="sms">SMS</button>.</li>
-        <li>Book your <button type="button" class="ex" data-ex="lug">dog's luggage ticket</button> online at <a href="https://parcel.indianrail.gov.in/LTBook/" target="_blank" rel="noopener">parcel.indianrail.gov.in</a> as soon as your coupe is allotted. Don't leave it to the last minute. If you forget, the fine is about 6 times the luggage ticket.</li>
-        <li>Rules change. Check with the station if anything here looks different.</li>
-      </ol>
-    </div>
-  </aside>
+  <section class="step">
+      <div class="stephead"><span class="num">6</span><div><h2>Print, sign and attach</h2><p>The page doesn't ask for your documents. Keep photocopies of these ready.</p></div></div>
+      <ul class="attach">
+        <li><button type="button" class="ex" data-ex="ticket"><b>E-ticket</b> showing your PNR</button></li>
+        <li><button type="button" class="ex" data-ex="vacc"><b>Vaccination record</b> of your dog</button></li>
+        <li><button type="button" class="ex" data-ex="fit"><b>Fitness certificate</b> from a vet</button></li>
+        <li><button type="button" class="ex" data-ex="id"><b>Photo ID</b> of one passenger, such as Aadhaar</button></li>
+      </ul>
+      <p class="hint" style="margin:0">Tap any item to see Boggi's real one, with personal details hidden.</p>
+      <p class="hint" style="margin:0">Email the letter with these attached as photos or PDFs. Sign the printed Emergency Quota form by hand and staple the copies to it.</p>
+  </section>
+
+  <section class="step">
+    <div class="stephead"><span class="num">7</span><div><h2>Finally</h2><p>What happens after you've sent everything.</p></div></div>
+    <ol class="finally">
+      <li>Drop the signed Emergency Quota form, with copies of your documents, at the DRM office by the date in step 5, in the morning as soon as it opens.</li>
+      <li>Coupe allotment is done via <button type="button" class="ex" data-ex="sms">SMS</button>.</li>
+      <li>Book your <button type="button" class="ex" data-ex="lug">dog's luggage ticket</button> online at <a href="https://parcel.indianrail.gov.in/LTBook/" target="_blank" rel="noopener">parcel.indianrail.gov.in</a> as soon as your coupe is allotted. Don't leave it to the last minute. If you forget, the fine is about 6 times the luggage ticket.</li>
+      <li>Carry the vaccination record and the vet's fitness certificate on the train.</li>
+      <li>Rules change. Check with the station if anything here looks different.</li>
+    </ol>
+  </section>
 </main>
 
 <dialog class="viewer" id="viewer" aria-labelledby="vcap">
@@ -436,10 +428,6 @@ ${name}
 function code(st){ const t=(st||"").trim(); if(!t) return ""; const c=t.split(/[\s–\-—]/)[0]; return c.length<=5?c.toUpperCase():t.slice(0,10); }
 function changed(){
   const m=model(), {s,d}=m;
-  $("sFrom").textContent=code(s.from)||"FROM"; $("sTo").textContent=code(s.to)||"TO";
-  $("sPnr").textContent=digits(s.pnr)||"——————————"; $("sTrain").textContent=digits(s.trainNo)||"—————";
-  $("sDate").textContent=d? fmtEq(d):"—"; $("sDog").textContent=s.dogName.trim()||"—";
-  $("sClass").textContent=`1A · ${m.unit}`;
   // passengers vs berths
   const np=m.pax.length; $("paxHint").textContent = np && np!==m.n ? `You've listed ${np} passenger${np>1?"s":""} for a ${m.unit}. Railways usually need a ticket for every berth.` : "";
   // deadline
