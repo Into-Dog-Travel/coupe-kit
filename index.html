@@ -64,6 +64,14 @@ h1 em{font-style:normal;color:var(--red)}
 .sendbox{border-top:1px dashed var(--line);padding-top:16px;display:grid;gap:10px}
 .signoff{margin:6px 0 0;font:800 22px/1.25 var(--display);display:grid;gap:4px}
 .signoff span{font-size:24px}
+.eqprev{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:10px;font-size:13.5px;max-height:320px;overflow:auto}
+.eqprev .eh{text-align:center;display:grid;gap:2px}
+.eqprev .eh b{font-size:14.5px;letter-spacing:.02em}
+.eqprev table{border-collapse:collapse;width:100%}
+.eqprev td{border:1px solid var(--line);padding:5px 8px;vertical-align:top;overflow-wrap:anywhere}
+.eqprev td:first-child{color:var(--muted);width:42%}
+.eqprev td:last-child{font-weight:600}
+.eqprev .sub{font-weight:700}
 .finally{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15.5px}
 form{display:grid;gap:22px;min-width:0}
 fieldset{border:1px solid var(--line);background:var(--surface);border-radius:10px;margin:0;padding:22px 20px 22px;display:grid;gap:16px;min-width:0}
@@ -304,6 +312,11 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
       <button type="button" class="btn" id="genEq"><span>Download Emergency Quota form<small>PDF · print, sign, drop at the office (Google for address and timings)</small></span><span aria-hidden="true">↓</span></button>
     </div>
     <div class="status" id="statusB" role="status"></div>
+    <div class="sendbox">
+      <h3>What the form will say</h3>
+      <div class="eqprev" id="eqPrev"></div>
+      <span class="hint">Print it, sign above "Signature of Applicant" and staple the copies from step 6 behind it.</span>
+    </div>
   </section>
 
   <section class="step">
@@ -437,6 +450,20 @@ ${name}
 +91 ${m.mobile||"[mobile]"}`;
 }
 
+/* ---------- Emergency Quota preview ---------- */
+const esc = t => String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function renderEq(m){
+  const {s,d}=m, blank="<span style='color:var(--muted);font-weight:400'>—</span>";
+  const v=x=> (x && String(x).trim()) ? esc(x) : blank;
+  const rows=[["Name of Passenger", m.pax.map(p=>p.name.trim()).join(", ")],["Mobile No.", m.mobile?"+91 "+m.mobile:""],["Train No.", m.train],
+    ["Date of Journey", d?fmtEq(d):""],["No. of Berths / Seats", String(m.pax.length||m.n)],["Class","First AC (1A)"],
+    ["Station", (s.from.trim()||s.to.trim())?`From: ${s.from.trim()}  To: ${s.to.trim()}`:""],["PNR", digits(s.pnr)]];
+  const app=[["Name", s.name.trim()],["Address", clean(s.address).replace(/\n+/g,", ")],["Mobile No.", m.mobile?"+91 "+m.mobile:""]];
+  const tb=r=>"<table>"+r.map(([a,b])=>`<tr><td>${esc(a)}</td><td>${v(b)}</td></tr>`).join("")+"</table>";
+  $("eqPrev").innerHTML=`<div class="eh"><b>${esc((s.railway.trim()||"Indian Railways").toUpperCase())}</b><span>DRM's Office${s.office.trim()?" · "+esc(clean(s.office).replace(/\n+/g,", ")):""}</span><b>Emergency Quota Application</b></div>
+  <div>To, <b>${s.agCancer?"ACM (Res)":"DRM (Res)"}</b></div>${tb(rows)}<div class="sub">Applicant Details</div>${tb(app)}`;
+}
+
 /* ---------- live panel ---------- */
 function code(st){ const t=(st||"").trim(); if(!t) return ""; const c=t.split(/[\s–\-—]/)[0]; return c.length<=5?c.toUpperCase():t.slice(0,10); }
 function changed(){
@@ -455,6 +482,7 @@ function changed(){
     else{ dl.innerHTML=`<strong>Drop the form by ${fmtDay(by)} morning, as soon as the office opens</strong>${left===0?"That's today.":left===1?"That's tomorrow.":`${left} days from today.`} Google the DRM office for its address and timings.`; }
   }
   // email
+  renderEq(m);
   $("eTo").textContent = s.drmEmail.trim() || "Add the DRM office email in step 4";
   $("eSubj").textContent = m.subj; $("eBody").textContent = emailText(m);
   $("mailto").href = `mailto:${encodeURIComponent(s.drmEmail.trim())}?subject=${encodeURIComponent(m.subj)}&body=${encodeURIComponent(emailText(m))}`;
