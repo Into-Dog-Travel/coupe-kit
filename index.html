@@ -65,7 +65,7 @@ form{display:grid;gap:22px;min-width:0}
 fieldset{border:1px solid var(--line);background:var(--surface);border-radius:10px;margin:0;padding:22px 20px 22px;display:grid;gap:16px;min-width:0}
 legend{display:contents}
 .stephead{display:flex;gap:14px;align-items:baseline}
-.num{font:800 30px/1 var(--display);color:var(--red);min-width:26px}
+.num{font:800 30px/1 var(--display);color:var(--red);min-width:46px}
 .stephead h2{font:800 22px/1.15 var(--display);margin:0;letter-spacing:-.01em}
 .stephead p{margin:4px 0 0;color:var(--muted);font-size:14.5px}
 .row{display:grid;gap:14px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
@@ -273,11 +273,9 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
   </form>
 
   <section class="step go" id="step5">
-    <div class="stephead"><span class="num">5</span><div><h2>Download and send</h2><p>Check steps 1 to 4, then download both documents.</p></div></div>
-    <div class="deadline" id="deadline"><strong>Pick your journey date</strong>We'll show when the Emergency Quota form has to reach the DRM office.</div>
+    <div class="stephead"><span class="num">5A</span><div><h2>Download and email the coupe request letter</h2><p>Check steps 1 to 4, then download the letter and email it to the DRM.</p></div></div>
     <div class="dl">
       <button type="button" class="btn" id="genLetter"><span>Download coupe request letter<small>PDF · email this to the DRM (Google for the email ID)</small></span><span aria-hidden="true">↓</span></button>
-      <button type="button" class="btn" id="genEq"><span>Download Emergency Quota form<small>PDF · print, sign, drop at the office (Google for address and timings)</small></span><span aria-hidden="true">↓</span></button>
     </div>
     <div class="status" id="status" role="status"></div>
     <div class="sendbox" id="emailCard">
@@ -292,6 +290,15 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
       </div>
       <span class="hint">Send it as soon as your ticket is booked. Attach the letter PDF and the copies from step 6.</span>
     </div>
+  </section>
+
+  <section class="step go" id="step5b">
+    <div class="stephead"><span class="num">5B</span><div><h2>Download the Emergency Quota form</h2><p>Print it, sign it and drop it at the DRM office with copies of your documents.</p></div></div>
+    <div class="deadline" id="deadline"><strong>Pick your journey date</strong>We'll show when the Emergency Quota form has to reach the DRM office.</div>
+    <div class="dl">
+      <button type="button" class="btn" id="genEq"><span>Download Emergency Quota form<small>PDF · print, sign, drop at the office (Google for address and timings)</small></span><span aria-hidden="true">↓</span></button>
+    </div>
+    <div class="status" id="statusB" role="status"></div>
   </section>
 
   <section class="step">
@@ -309,7 +316,7 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
   <section class="step">
     <div class="stephead"><span class="num">7</span><div><h2>Finally</h2><p>What happens after you've sent everything.</p></div></div>
     <ol class="finally">
-      <li>Drop the signed Emergency Quota form, with copies of your documents, at the DRM office by the date in step 5, in the morning as soon as it opens.</li>
+      <li>Drop the signed Emergency Quota form, with copies of your documents, at the DRM office by the date in step 5B, in the morning as soon as it opens.</li>
       <li>Coupe allotment is done via <button type="button" class="ex" data-ex="sms">SMS</button>.</li>
       <li>Book your <button type="button" class="ex" data-ex="lug">dog's luggage ticket</button> online at <a href="https://parcel.indianrail.gov.in/LTBook/" target="_blank" rel="noopener">parcel.indianrail.gov.in</a> as soon as your coupe is allotted. Don't leave it to the last minute. If you forget, the fine is about 6 times the luggage ticket.</li>
       <li>Carry the vaccination record and the vet's fitness certificate on the train.</li>
@@ -439,7 +446,7 @@ function changed(){
     const left=Math.round((by-today)/864e5);
     if(d<today){ dl.innerHTML="<strong>This date has passed</strong>Check the journey date in step 2."; }
     else if(left<0){ dl.classList.add("late"); dl.innerHTML="<strong>You're past the usual deadline</strong>The Emergency Quota form normally reaches the DRM office a day before the journey. Call or visit the station reservation office today."; }
-    else{ dl.innerHTML=`<strong>Drop the form by ${fmtDay(by)} morning, as soon as the office opens</strong>${left===0?"That's today.":left===1?"That's tomorrow.":`${left} days from today.`} Google the DRM office for its address and timings. Email the letter as early as you can.`; }
+    else{ dl.innerHTML=`<strong>Drop the form by ${fmtDay(by)} morning, as soon as the office opens</strong>${left===0?"That's today.":left===1?"That's tomorrow.":`${left} days from today.`} Google the DRM office for its address and timings.`; }
   }
   // email
   $("eTo").textContent = s.drmEmail.trim() || "Add the DRM office email in step 4";
@@ -477,10 +484,10 @@ function problems(m,forEq){
   }
   return p;
 }
-function showProblems(p){
+function showProblems(p,st){
   document.querySelectorAll("[aria-invalid]").forEach(el=>el.removeAttribute("aria-invalid"));
   p.forEach(([id])=>{ const el=$(id); if(el) el.setAttribute("aria-invalid","true"); });
-  const st=$("status"); st.className="status err";
+  st.className="status err";
   st.innerHTML = "Add these first:<ul class='missing'>"+p.map(([id,t])=>`<li><a href="#${id}" data-f="${id}">${t}</a></li>`).join("")+"</ul>";
   st.querySelectorAll("a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault(); const el=$(a.dataset.f); if(el){el.scrollIntoView({block:"center",behavior:"smooth"}); el.focus({preventScroll:true});}}));
 }
@@ -646,10 +653,10 @@ function download(bytes, name){
 }
 
 async function generate(kind, btn){
-  const st=$("status");
+  const st=$(kind==="eq"?"statusB":"status");
   if(!window.jspdf){ st.className="status err"; st.textContent="The PDF maker didn't load. Check your internet connection and reload the page."; return; }
   const m=model(); const p=problems(m, kind==="eq");
-  if(p.length){ showProblems(p); return; }
+  if(p.length){ showProblems(p,st); return; }
   document.querySelectorAll("[aria-invalid]").forEach(el=>el.removeAttribute("aria-invalid"));
   m.sig=null;
   btn.disabled=true; st.className="status"; st.textContent="Making your PDF…";
