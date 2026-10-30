@@ -197,7 +197,7 @@ footer .wrap{padding-block:22px 34px;font-size:13.5px;color:var(--muted);display
 <main class="wrap grid">
   <form id="kit" novalidate>
     <div class="toolbar">
-      <div class="private"><span aria-hidden="true">🔒</span><span><b>We don't collect anything.</b> Nothing you type is saved or sent anywhere. The PDFs are made right here in your browser.</span></div>
+      <div class="private"><span aria-hidden="true">🔒</span><span><b>Nothing you type leaves your phone.</b> The PDFs are made right here in your browser. We only count visits and downloads, with no cookies and no personal details.</span></div>
       <button type="button" class="link-btn" id="sampleBtn">Try with sample details</button>
     </div>
 
@@ -697,6 +697,14 @@ function download(bytes, name){
   setTimeout(()=>URL.revokeObjectURL(url), 60000);
 }
 
+function count(kind, m){
+  try{
+    const sample=/\(sample\)/i.test((m&&m.s&&m.s.name)||"");
+    const name=(sample?"sample-":"")+(kind==="eq"?"download-eq-form":"download-letter");
+    if(window.goatcounter&&window.goatcounter.count) window.goatcounter.count({path:name, title:name, event:true});
+  }catch(e){}
+}
+
 async function generate(kind, btn){
   const st=$(kind==="eq"?"statusB":"status");
   if(!window.jspdf){ st.className="status err"; st.textContent="The PDF maker didn't load. Check your internet connection and reload the page."; return; }
@@ -710,6 +718,7 @@ async function generate(kind, btn){
     const bytes = new Uint8Array(doc.output("arraybuffer"));
     const pnr=digits(m.s.pnr);
     download(bytes, kind==="eq" ? `Emergency_Quota_Application_PNR_${pnr}.pdf` : `DRM_Coupe_Request_PNR_${pnr}.pdf`);
+    count(kind, m);
     st.className="status ok";
     st.textContent = (kind==="eq" ? "Emergency Quota form downloaded. Print it, sign it and drop it at the DRM office." : "Letter downloaded. Attach it to the email below with your documents.");
   }catch(e){
@@ -721,6 +730,7 @@ $("genEq").addEventListener("click",e=>generate("eq",e.currentTarget));
 
 /* ---------- sample ---------- */
 $("sampleBtn").addEventListener("click",()=>{
+  try{ if(window.goatcounter&&window.goatcounter.count) window.goatcounter.count({path:"try-sample", title:"try-sample", event:true}); }catch(e){}
   const d=new Date(); d.setDate(d.getDate()+10);
   const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   write({name:"Asha Rao (sample)", mobile:"9800000000", email:"asha.sample@example.com", address:"Flat 4, Sample Apartments, Bandra West, Mumbai 400050",
@@ -754,5 +764,6 @@ $("sampleBtn").addEventListener("click",()=>{
 renderPax(); changed();
 })();
 </script>
+<script data-goatcounter="https://coupekit.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
